@@ -66,6 +66,11 @@ def api_request(endpoint: str, params: Dict = None) -> Dict:
 st.markdown('<h1 class="main-header">🎵 Spotify Analytics</h1>', unsafe_allow_html=True)
 st.markdown("---")
 
+# Debug: Mostrar URL de la API
+with st.expander("🔧 Debug Info"):
+    st.write(f"**API Base URL:** {API_BASE_URL}")
+    st.write(f"**Secrets available:** {list(st.secrets.keys()) if hasattr(st, 'secrets') else 'No secrets'}")
+
 # Sidebar con navegación
 st.sidebar.title("Navegación")
 page = st.sidebar.radio(
