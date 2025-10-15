@@ -69,7 +69,10 @@ st.markdown("---")
 # Debug: Mostrar URL de la API
 with st.expander("🔧 Debug Info"):
     st.write(f"**API Base URL:** {API_BASE_URL}")
-    st.write(f"**Secrets available:** {list(st.secrets.keys()) if hasattr(st, 'secrets') else 'No secrets'}")
+    try:
+        st.write(f"**Secrets available:** {list(st.secrets.keys())}")
+    except:
+        st.write(f"**Secrets available:** No secrets configured")
 
 # Sidebar con navegación
 st.sidebar.title("Navegación")
