@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  # Base de datos PostgreSQL
+  postgres:
+    image: postgres:15
+    container_name: spotify_postgres
+    environment:
+      POSTGRES_DB: spotify_analytics
+      POSTGRES_USER: spotify_user
+      POSTGRES_PASSWORD: spotify_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Cache Redis
+  redis:
+    image: redis:7-alpine
+    container_name: spotify_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  # Backend API (lo crearemos después)
+  backend:
+    build: ./backend
+    container_name: spotify_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://spotify_user:spotify_pass@postgres:5432/spotify_analytics
+      - REDIS_URL=redis://redis:6379
+      - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
+      - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
+      - SECRET_KEY=${SECRET_KEY}
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./backend:/app
+
+volumes:
+  postgres_data:
+  redis_data:
