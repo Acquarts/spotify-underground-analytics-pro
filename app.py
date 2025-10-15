@@ -20,9 +20,9 @@ st.set_page_config(
 # URL base de la API (configurable)
 # Try Streamlit secrets first, then environment variables, then default
 try:
-    API_BASE_URL = st.secrets.get("API_BASE_URL", os.getenv("API_BASE_URL", "http://localhost:8000"))
+    API_BASE_URL = st.secrets.get("API_BASE_URL", os.getenv("API_BASE_URL", "https://spotify-underground-analytics-pro-production.up.railway.app"))
 except:
-    API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
+    API_BASE_URL = os.getenv("API_BASE_URL", "https://spotify-underground-analytics-pro-production.up.railway.app")
 
 # Estilos CSS personalizados
 st.markdown("""
