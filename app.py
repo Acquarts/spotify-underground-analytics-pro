@@ -55,11 +55,15 @@ def api_request(endpoint: str, params: Dict = None) -> Dict:
     """Realiza peticiones a la API"""
     try:
         url = f"{API_BASE_URL}{endpoint}"
+        st.write(f"🔗 Requesting: {url}")  # Debug
         response = requests.get(url, params=params, timeout=30)
+        st.write(f"📊 Status Code: {response.status_code}")  # Debug
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
-        st.error(f"Error conectando con la API: {str(e)}")
+        st.error(f"❌ Error conectando con la API: {str(e)}")
+        st.error(f"🔗 URL intentada: {url}")
+        st.error(f"📋 Tipo de error: {type(e).__name__}")
         return None
 
 # Header principal
