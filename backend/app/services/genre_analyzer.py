@@ -55,42 +55,67 @@ class GenreAnalyzer:
         print(f"🎵 Analizando género: {genre} (Development mode)")
         
         try:
-            # 1. Buscar menos playlists
-            playlists = self.sp.search(
-                q=f'genre:{genre}', 
-                type='playlist', 
-                limit=self.MAX_PLAYLISTS
-            )
-            
-            time.sleep(0.5)  # Delay para evitar rate limiting
-            
-            # 2. Recopilar tracks (cantidad reducida)
+            # 1. Buscar playlists específicas del género (mejorado)
+            # Usar términos de búsqueda más específicos para cada género
+            search_terms = self._get_genre_search_terms(genre)
+
             all_tracks = []
             playlist_count = 0
-            
-            for playlist in playlists['playlists']['items'][:self.MAX_PLAYLISTS]:
-                if playlist and playlist['tracks']['total'] > 5:
-                    playlist_count += 1
-                    
-                    # Obtener menos tracks por playlist
-                    tracks = self.sp.playlist_tracks(
-                        playlist['id'], 
-                        limit=self.MAX_TRACKS_PER_PLAYLIST,
-                        fields="items(track(id,name,popularity,artists))"
-                    )
-                    
-                    time.sleep(0.3)  # Delay entre peticiones
-                    
-                    for item in tracks['items']:
-                        if (item['track'] and 
-                            item['track']['id'] and 
-                            item['track']['popularity'] > 0):
-                            all_tracks.append({
-                                'id': item['track']['id'],
-                                'name': item['track']['name'],
-                                'popularity': item['track']['popularity'],
-                                'artist': item['track']['artists'][0]['name'] if item['track']['artists'] else 'Unknown'
-                            })
+
+            # Intentar con diferentes términos de búsqueda
+            for search_term in search_terms[:2]:  # Limitar a 2 búsquedas para evitar rate limiting
+                playlists = self.sp.search(
+                    q=search_term,
+                    type='playlist',
+                    limit=self.MAX_PLAYLISTS // 2  # Dividir entre búsquedas
+                )
+
+                time.sleep(0.5)
+
+                # 2. Recopilar tracks (cantidad reducida)
+                for playlist in playlists['playlists']['items']:
+                    if playlist and playlist['tracks']['total'] > 5:
+                        # Verificar que el nombre de la playlist contenga el género
+                        playlist_name = playlist['name'].lower()
+                        if genre.lower() in playlist_name or any(term.split(':')[0] in playlist_name for term in search_terms):
+                            playlist_count += 1
+
+                            # Obtener menos tracks por playlist
+                            tracks = self.sp.playlist_tracks(
+                                playlist['id'],
+                                limit=self.MAX_TRACKS_PER_PLAYLIST,
+                                fields="items(track(id,name,popularity,artists(name,genres)))"
+                            )
+
+                            time.sleep(0.3)
+
+                            for item in tracks['items']:
+                                if (item['track'] and
+                                    item['track']['id'] and
+                                    item['track']['popularity'] > 0):
+
+                                    # Obtener géneros del artista
+                                    artist_genres = []
+                                    if item['track']['artists']:
+                                        # Nota: artists.genres no está disponible en playlist_tracks
+                                        # Solo obtendremos el nombre del artista
+                                        artist_name = item['track']['artists'][0]['name']
+                                    else:
+                                        artist_name = 'Unknown'
+
+                                    all_tracks.append({
+                                        'id': item['track']['id'],
+                                        'name': item['track']['name'],
+                                        'popularity': item['track']['popularity'],
+                                        'artist': artist_name,
+                                        'from_playlist': playlist['name']
+                                    })
+
+                            if playlist_count >= self.MAX_PLAYLISTS:
+                                break
+
+                if playlist_count >= self.MAX_PLAYLISTS:
+                    break
             
             # 3. Remover duplicados y limitar estrictamente
             unique_tracks = {track['id']: track for track in all_tracks}
@@ -102,6 +127,12 @@ class GenreAnalyzer:
                     "error": "No tracks found for this genre",
                     "note": "Try a different genre or check Spotify availability"
                 }
+
+            # Debug: Mostrar playlists usadas
+            playlists_used = list(set([t.get('from_playlist', 'Unknown') for t in tracks_list]))
+            print(f"📋 Playlists utilizadas: {', '.join(playlists_used[:3])}...")
+            sample_tracks = [f"{t['name']} - {t['artist']}" for t in tracks_list[:3]]
+            print(f"🎵 Tracks de muestra: {', '.join(sample_tracks)}")
             
             # 4. Intentar obtener audio features (puede fallar en Development Mode)
             track_ids = [track['id'] for track in tracks_list]
@@ -218,6 +249,39 @@ class GenreAnalyzer:
             "note": "Analysis limited by Spotify Development mode quotas"
         }
     
+    def _get_genre_search_terms(self, genre: str) -> List[str]:
+        """
+        Genera términos de búsqueda específicos para cada género
+        para mejorar la precisión de las playlists encontradas
+        """
+        genre_lower = genre.lower()
+
+        # Mapeo de géneros a términos de búsqueda más específicos
+        specific_searches = {
+            'pop': [f'{genre} hits', f'{genre} music', f'top {genre}'],
+            'rock': [f'{genre} classics', f'{genre} hits', f'classic {genre}'],
+            'hip-hop': [f'{genre} hits', f'rap {genre}', f'{genre} music'],
+            'electronic': [f'{genre} music', f'edm {genre}', f'{genre} dance'],
+            'breakbeat': [f'{genre} classics', f'{genre} dnb', f'{genre} electronic'],
+            'drum-and-bass': [f'{genre}', f'dnb {genre}', f'jungle {genre}'],
+            'dubstep': [f'{genre} heavy', f'{genre} bass', f'{genre} music'],
+            'techno': [f'{genre} underground', f'{genre} techno', f'tech {genre}'],
+            'house': [f'{genre} music', f'deep {genre}', f'{genre} dance'],
+            'indie': [f'{genre} rock', f'{genre} pop', f'alternative {genre}'],
+            'hardstyle': [f'{genre} raw', f'{genre} hardstyle', f'{genre} hardcore'],
+            'psytrance': [f'{genre} goa', f'{genre} progressive', f'{genre} psychedelic'],
+            'darkwave': [f'{genre} goth', f'{genre} dark', f'{genre} wave'],
+            'industrial': [f'{genre} metal', f'{genre} ebm', f'{genre} dark'],
+            'witch-house': [f'{genre}', f'{genre} dark', f'{genre} electronic']
+        }
+
+        # Si el género tiene un mapeo específico, usarlo
+        if genre_lower in specific_searches:
+            return specific_searches[genre_lower]
+
+        # Términos genéricos si no hay mapeo específico
+        return [f'{genre} music', f'{genre} hits', f'best of {genre}']
+
     def _estimate_audio_features(self, genre: str, avg_popularity: float, playlist_count: int) -> Dict:
         """
         Estima audio features basándose en características típicas del género
