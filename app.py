@@ -213,7 +213,46 @@ elif page == "🎯 Análisis de Géneros":
 
                         # Información adicional
                         with st.expander("📋 Ver datos completos"):
-                            st.json(data)
+                            # Métricas principales
+                            st.markdown("#### 📊 Métricas del Género")
+
+                            metrics_df = pd.DataFrame([
+                                {"Métrica": "Género", "Valor": data.get('genre', 'N/A').title()},
+                                {"Métrica": "Tracks Analizados", "Valor": data.get('tracks_analyzed', 0)},
+                                {"Métrica": "Presencia en Playlists", "Valor": data.get('playlist_presence', 0)},
+                                {"Métrica": "Popularidad Promedio", "Valor": f"{data.get('avg_popularity', 0):.2f}"},
+                                {"Métrica": "Energía", "Valor": f"{data.get('avg_energy', 0):.3f}"},
+                                {"Métrica": "Bailabilidad", "Valor": f"{data.get('avg_danceability', 0):.3f}"},
+                                {"Métrica": "Valencia", "Valor": f"{data.get('avg_valence', 0):.3f}"},
+                                {"Métrica": "Tempo (BPM)", "Valor": f"{data.get('avg_tempo', 0):.1f}"},
+                                {"Métrica": "Acústica", "Valor": f"{data.get('avg_acousticness', 0):.3f}"},
+                                {"Métrica": "Instrumental", "Valor": f"{data.get('avg_instrumentalness', 0):.3f}"}
+                            ])
+                            st.dataframe(metrics_df, hide_index=True, use_container_width=True)
+
+                            # Estado del modo
+                            if data.get('development_mode'):
+                                st.markdown("#### ⚙️ Estado del Análisis")
+                                status_df = pd.DataFrame([
+                                    {"Campo": "Modo", "Estado": "Development Mode"},
+                                    {"Campo": "Audio Features", "Estado": "Estimadas" if data.get('estimated') else "No disponibles"}
+                                ])
+                                st.dataframe(status_df, hide_index=True, use_container_width=True)
+
+                                if data.get('note'):
+                                    st.info(data.get('note'))
+
+                            # Top tracks
+                            if data.get('top_tracks'):
+                                st.markdown("#### 🎵 Top Tracks")
+                                tracks_df = pd.DataFrame(data.get('top_tracks', []))
+                                if not tracks_df.empty:
+                                    tracks_df = tracks_df.rename(columns={
+                                        'name': 'Track',
+                                        'artist': 'Artista',
+                                        'popularity': 'Popularidad'
+                                    })
+                                    st.dataframe(tracks_df, hide_index=True, use_container_width=True)
             else:
                 st.warning("Por favor ingresa un nombre de género")
 
@@ -359,7 +398,43 @@ elif page == "🎯 Análisis de Géneros":
 
                     # Datos completos
                     with st.expander("📋 Ver análisis completo"):
-                        st.json(data)
+                        st.markdown("#### 🎤 Géneros Mainstream Analizados")
+                        mainstream_analysis = data.get("mainstream_analysis", {})
+                        mainstream_genres = mainstream_analysis.get("genres", {})
+
+                        if mainstream_genres:
+                            mainstream_list = []
+                            for genre_name, genre_data in mainstream_genres.items():
+                                if "error" not in genre_data:
+                                    mainstream_list.append({
+                                        "Género": genre_name.title(),
+                                        "Popularidad": f"{genre_data.get('avg_popularity', 0):.1f}",
+                                        "Energía": f"{genre_data.get('avg_energy', 0):.2f}",
+                                        "Bailabilidad": f"{genre_data.get('avg_danceability', 0):.2f}",
+                                        "Tracks": genre_data.get('tracks_analyzed', 0)
+                                    })
+
+                            if mainstream_list:
+                                st.dataframe(pd.DataFrame(mainstream_list), hide_index=True, use_container_width=True)
+
+                        st.markdown("#### 💎 Géneros Underground Analizados")
+                        underground_analysis = data.get("underground_analysis", {})
+                        underground_genres = underground_analysis.get("genres", {})
+
+                        if underground_genres:
+                            underground_list = []
+                            for genre_name, genre_data in underground_genres.items():
+                                if "error" not in genre_data:
+                                    underground_list.append({
+                                        "Género": genre_name.title(),
+                                        "Popularidad": f"{genre_data.get('avg_popularity', 0):.1f}",
+                                        "Energía": f"{genre_data.get('avg_energy', 0):.2f}",
+                                        "Bailabilidad": f"{genre_data.get('avg_danceability', 0):.2f}",
+                                        "Tracks": genre_data.get('tracks_analyzed', 0)
+                                    })
+
+                            if underground_list:
+                                st.dataframe(pd.DataFrame(underground_list), hide_index=True, use_container_width=True)
 
 # ============================================================================
 # PÁGINA DE COMPARACIÓN DE ARTISTAS

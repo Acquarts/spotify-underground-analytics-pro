@@ -132,23 +132,29 @@ class GenreAnalyzer:
                 valid_features = []
 
             if not audio_features_available:
-                # Retornar métricas básicas sin audio features
-                print(f"ℹ️ Retornando métricas básicas (sin audio features)")
+                # Calcular métricas estimadas basadas en popularidad y género
+                print(f"ℹ️ Calculando métricas estimadas (sin audio features)")
+                avg_popularity = round(float(np.mean([t['popularity'] for t in tracks_list])), 2)
+
+                # Estimaciones basadas en características típicas del género y popularidad
+                estimated_metrics = self._estimate_audio_features(genre, avg_popularity, playlist_count)
+
                 return {
                     "genre": genre,
                     "total_tracks": len(tracks_list),
                     "tracks_analyzed": len(tracks_list),
                     "playlist_presence": playlist_count,
-                    "avg_popularity": round(float(np.mean([t['popularity'] for t in tracks_list])), 2),
-                    "avg_energy": 0.5,  # Valores por defecto
-                    "avg_danceability": 0.5,
-                    "avg_valence": 0.5,
-                    "avg_tempo": 120.0,
-                    "avg_acousticness": 0.5,
-                    "avg_instrumentalness": 0.3,
+                    "avg_popularity": avg_popularity,
+                    "avg_energy": estimated_metrics['energy'],
+                    "avg_danceability": estimated_metrics['danceability'],
+                    "avg_valence": estimated_metrics['valence'],
+                    "avg_tempo": estimated_metrics['tempo'],
+                    "avg_acousticness": estimated_metrics['acousticness'],
+                    "avg_instrumentalness": estimated_metrics['instrumentalness'],
                     "development_mode": True,
                     "audio_features_available": False,
-                    "note": "⚠️ Audio features no disponibles. Tu app Spotify está en Development Mode. Agrega tu usuario en: https://developer.spotify.com/dashboard",
+                    "estimated": True,
+                    "note": "⚠️ Audio features estimadas. Tu app Spotify está en Development Mode. Agrega tu usuario en: https://developer.spotify.com/dashboard",
                     "top_tracks": [
                         {"name": t['name'], "artist": t['artist'], "popularity": t['popularity']}
                         for t in sorted(tracks_list, key=lambda x: x['popularity'], reverse=True)[:5]
@@ -212,8 +218,61 @@ class GenreAnalyzer:
             "note": "Analysis limited by Spotify Development mode quotas"
         }
     
-    def _calculate_metrics(self, tracks: List[Dict], 
-                          audio_features: List[Dict], 
+    def _estimate_audio_features(self, genre: str, avg_popularity: float, playlist_count: int) -> Dict:
+        """
+        Estima audio features basándose en características típicas del género
+        y métricas de popularidad cuando no hay datos reales disponibles
+        """
+        # Características base por género (basadas en conocimiento musical típico)
+        genre_profiles = {
+            'breakbeat': {'energy': 0.78, 'danceability': 0.72, 'valence': 0.65, 'tempo': 140, 'acousticness': 0.15, 'instrumentalness': 0.45},
+            'drum-and-bass': {'energy': 0.85, 'danceability': 0.75, 'valence': 0.60, 'tempo': 170, 'acousticness': 0.10, 'instrumentalness': 0.50},
+            'dubstep': {'energy': 0.82, 'danceability': 0.70, 'valence': 0.50, 'tempo': 140, 'acousticness': 0.12, 'instrumentalness': 0.55},
+            'techno': {'energy': 0.80, 'danceability': 0.78, 'valence': 0.55, 'tempo': 128, 'acousticness': 0.08, 'instrumentalness': 0.65},
+            'house': {'energy': 0.75, 'danceability': 0.80, 'valence': 0.70, 'tempo': 125, 'acousticness': 0.10, 'instrumentalness': 0.60},
+            'electronic': {'energy': 0.70, 'danceability': 0.68, 'valence': 0.60, 'tempo': 120, 'acousticness': 0.15, 'instrumentalness': 0.40},
+            'pop': {'energy': 0.65, 'danceability': 0.70, 'valence': 0.65, 'tempo': 118, 'acousticness': 0.25, 'instrumentalness': 0.05},
+            'rock': {'energy': 0.72, 'danceability': 0.55, 'valence': 0.58, 'tempo': 125, 'acousticness': 0.20, 'instrumentalness': 0.10},
+            'hip-hop': {'energy': 0.68, 'danceability': 0.75, 'valence': 0.60, 'tempo': 95, 'acousticness': 0.18, 'instrumentalness': 0.08},
+            'indie': {'energy': 0.62, 'danceability': 0.60, 'valence': 0.55, 'tempo': 115, 'acousticness': 0.35, 'instrumentalness': 0.15},
+            'hardstyle': {'energy': 0.90, 'danceability': 0.75, 'valence': 0.65, 'tempo': 150, 'acousticness': 0.05, 'instrumentalness': 0.50},
+            'psytrance': {'energy': 0.88, 'danceability': 0.70, 'valence': 0.70, 'tempo': 145, 'acousticness': 0.05, 'instrumentalness': 0.70},
+            'darkwave': {'energy': 0.60, 'danceability': 0.50, 'valence': 0.35, 'tempo': 110, 'acousticness': 0.30, 'instrumentalness': 0.40},
+            'industrial': {'energy': 0.85, 'danceability': 0.65, 'valence': 0.40, 'tempo': 130, 'acousticness': 0.08, 'instrumentalness': 0.45},
+            'witch-house': {'energy': 0.65, 'danceability': 0.55, 'valence': 0.30, 'tempo': 105, 'acousticness': 0.20, 'instrumentalness': 0.50},
+        }
+
+        # Perfil por defecto para géneros desconocidos
+        default_profile = {'energy': 0.65, 'danceability': 0.65, 'valence': 0.55, 'tempo': 120, 'acousticness': 0.25, 'instrumentalness': 0.30}
+
+        # Obtener perfil del género o usar default
+        base_profile = genre_profiles.get(genre.lower(), default_profile)
+
+        # Ajustar basado en popularidad (géneros más populares tienden a ser más bailables y con más valencia)
+        popularity_factor = avg_popularity / 100.0
+
+        # Añadir variación basada en la popularidad y presencia en playlists
+        playlist_factor = min(playlist_count / 10.0, 1.0)  # Normalizar
+
+        estimated = {
+            'energy': round(base_profile['energy'] + (popularity_factor * 0.05) + np.random.uniform(-0.05, 0.05), 3),
+            'danceability': round(base_profile['danceability'] + (popularity_factor * 0.08) + np.random.uniform(-0.05, 0.05), 3),
+            'valence': round(base_profile['valence'] + (popularity_factor * 0.10) + np.random.uniform(-0.05, 0.05), 3),
+            'tempo': round(base_profile['tempo'] + (playlist_factor * 5) + np.random.uniform(-5, 5), 1),
+            'acousticness': round(base_profile['acousticness'] - (popularity_factor * 0.05) + np.random.uniform(-0.03, 0.03), 3),
+            'instrumentalness': round(base_profile['instrumentalness'] + np.random.uniform(-0.05, 0.05), 3)
+        }
+
+        # Asegurar que los valores están en rangos válidos
+        for key in ['energy', 'danceability', 'valence', 'acousticness', 'instrumentalness']:
+            estimated[key] = max(0.0, min(1.0, estimated[key]))
+
+        estimated['tempo'] = max(60.0, min(200.0, estimated['tempo']))
+
+        return estimated
+
+    def _calculate_metrics(self, tracks: List[Dict],
+                          audio_features: List[Dict],
                           playlist_count: int) -> Dict:
         """
         Calcula métricas agregadas para un género
@@ -282,37 +341,80 @@ class GenreAnalyzer:
             key=lambda x: x[1].get('avg_danceability', 0)
         )
         
-        # Detectar géneros underground
+        # Detectar géneros underground (criterios mejorados)
         underground_candidates = []
         for genre, metrics in valid_results.items():
             popularity = metrics.get('avg_popularity', 0)
             energy = metrics.get('avg_energy', 0)
-            
-            if popularity < 45 and energy > 0.55:
-                underground_score = energy - (popularity / 100)
+            danceability = metrics.get('avg_danceability', 0)
+
+            # Criterios más flexibles para detectar underground gems:
+            # 1. Baja popularidad (<50) con alta energía (>0.65)
+            # 2. O muy baja popularidad (<35) con características interesantes
+            is_underground = False
+            reason = ""
+
+            if popularity < 50 and energy > 0.65:
+                is_underground = True
+                reason = f"Alta energía ({energy:.2f}) con popularidad emergente ({popularity:.1f})"
+            elif popularity < 35 and danceability > 0.60:
+                is_underground = True
+                reason = f"Muy bailable ({danceability:.2f}) y poco conocido ({popularity:.1f})"
+            elif popularity < 40 and energy > 0.60 and danceability > 0.65:
+                is_underground = True
+                reason = f"Buena combinación energía/bailabilidad con baja exposición ({popularity:.1f})"
+
+            if is_underground:
+                # Score compuesto: prioriza alta energía y baja popularidad
+                underground_score = (energy * 0.5) + (danceability * 0.3) - (popularity / 100 * 0.2)
                 underground_candidates.append({
+                    'name': genre,
                     'genre': genre,
                     'underground_score': round(underground_score, 3),
-                    'popularity': popularity,
-                    'energy': energy
+                    'avg_popularity': popularity,
+                    'avg_energy': energy,
+                    'avg_danceability': danceability,
+                    'reason': reason
                 })
-        
+
         underground_candidates.sort(key=lambda x: x['underground_score'], reverse=True)
-        
+
+        # Crear rankings ordenados
+        genres_by_popularity = sorted(
+            valid_results.items(),
+            key=lambda x: x[1].get('avg_popularity', 0),
+            reverse=True
+        )
+        genres_by_energy = sorted(
+            valid_results.items(),
+            key=lambda x: x[1].get('avg_energy', 0),
+            reverse=True
+        )
+        genres_by_danceability = sorted(
+            valid_results.items(),
+            key=lambda x: x[1].get('avg_danceability', 0),
+            reverse=True
+        )
+
         return {
             "most_popular": {
-                "genre": most_popular[0], 
+                "genre": most_popular[0],
                 "value": round(most_popular[1].get('avg_popularity', 0), 2)
             },
             "most_energetic": {
-                "genre": most_energetic[0], 
+                "genre": most_energetic[0],
                 "value": round(most_energetic[1].get('avg_energy', 0), 3)
             },
             "most_danceable": {
-                "genre": most_danceable[0], 
+                "genre": most_danceable[0],
                 "value": round(most_danceable[1].get('avg_danceability', 0), 3)
             },
-            "underground_gems": underground_candidates[:3],
+            "rankings": {
+                "by_popularity": [g[0] for g in genres_by_popularity],
+                "by_energy": [g[0] for g in genres_by_energy],
+                "by_danceability": [g[0] for g in genres_by_danceability]
+            },
+            "underground_gems": underground_candidates[:5],
             "total_compared": len(valid_results)
         }
     
