@@ -77,13 +77,14 @@ async def find_underground_genres(
     """
     try:
         analyzer = GenreAnalyzer(db)
-        
-        # Géneros candidatos a ser underground
+
+        # OPTIMIZADO: Reducido a 5 géneros para evitar timeouts en Development Mode
+        # Géneros candidatos a ser underground (reducido de 8 a 5)
         underground_candidates = [
-            'breakbeat', 'drum-and-bass', 'dubstep', 'hardstyle',
-            'psytrance', 'darkwave', 'industrial', 'witch-house'
+            'breakbeat', 'drum-and-bass', 'dubstep',
+            'hardstyle', 'psytrance'
         ]
-        
+
         result = analyzer.analyze_multiple_genres(underground_candidates)
         
         # Filtrar solo los underground gems
@@ -159,13 +160,14 @@ async def get_trending_analysis(
     """
     try:
         analyzer = GenreAnalyzer(db)
-        
-        # Géneros mainstream
-        mainstream = ['pop', 'rock', 'hip-hop', 'country']
-        
-        # Géneros underground  
-        underground = ['breakbeat', 'drum-and-bass', 'psytrance', 'darkwave']
-        
+
+        # OPTIMIZADO: Reducido a 2 géneros por grupo para evitar timeouts en Development Mode
+        # Géneros mainstream (reducido de 4 a 2)
+        mainstream = ['pop', 'rock']
+
+        # Géneros underground (reducido de 4 a 2)
+        underground = ['breakbeat', 'drum-and-bass']
+
         # Analizar ambos grupos
         mainstream_result = analyzer.analyze_multiple_genres(mainstream)
         underground_result = analyzer.analyze_multiple_genres(underground)

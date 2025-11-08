@@ -56,7 +56,11 @@ def api_request(endpoint: str, params: Dict = None) -> Dict:
     try:
         url = f"{API_BASE_URL}{endpoint}"
         st.write(f"🔗 Requesting: {url}")  # Debug
-        response = requests.get(url, params=params, timeout=30)
+
+        # Timeout más largo para endpoints complejos (60 segundos)
+        timeout = 60 if '/trending' in endpoint or '/underground' in endpoint else 30
+
+        response = requests.get(url, params=params, timeout=timeout)
         st.write(f"📊 Status Code: {response.status_code}")  # Debug
         response.raise_for_status()
         return response.json()
