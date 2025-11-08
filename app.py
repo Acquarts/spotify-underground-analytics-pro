@@ -70,13 +70,39 @@ def api_request(endpoint: str, params: Dict = None) -> Dict:
 st.markdown('<h1 class="main-header">🎵 Spotify Analytics</h1>', unsafe_allow_html=True)
 st.markdown("---")
 
-# Debug: Mostrar URL de la API
+# Debug: Mostrar URL de la API y limitaciones
 with st.expander("🔧 Debug Info"):
     st.write(f"**API Base URL:** {API_BASE_URL}")
     try:
         st.write(f"**Secrets available:** {list(st.secrets.keys())}")
     except:
         st.write(f"**Secrets available:** No secrets configured")
+
+    st.markdown("---")
+    st.markdown("### ⚠️ Limitaciones de Spotify Development Mode")
+    st.info("""
+    **Esta app usa Spotify en Development Mode, lo que significa:**
+
+    ✅ **Lo que SÍ funciona:**
+    - Análisis de popularidad (datos reales)
+    - Búsqueda de playlists y tracks
+    - Comparación de artistas
+    - Detección de underground gems
+
+    ⚠️ **Audio Features (Energía, Bailabilidad, etc.):**
+    - Son **estimaciones inteligentes** basadas en perfiles de género
+    - NO son datos reales de Spotify API
+    - Son precisas pero aproximadas
+
+    💡 **¿Por qué?**
+    Spotify cambió su política en Mayo 2025 y ahora solo permite Extended Quota
+    a empresas con +250k usuarios activos. Los proyectos individuales deben
+    usar Development Mode con estimaciones.
+
+    📊 **Precisión de estimaciones:**
+    Las estimaciones se basan en características típicas de cada género musical
+    y son ajustadas según popularidad. Son útiles para análisis comparativos.
+    """)
 
 # Sidebar con navegación
 st.sidebar.title("Navegación")
@@ -168,6 +194,10 @@ elif page == "🎯 Análisis de Géneros":
 
                     if result and result.get("status") == "success":
                         data = result.get("data", {})
+
+                        # Advertencia si son features estimadas
+                        if data.get("estimated"):
+                            st.warning("⚠️ **Audio Features Estimadas**: Los valores de energía, bailabilidad y otras métricas son estimaciones basadas en características típicas del género. La popularidad y tracks son datos reales de Spotify.")
 
                         # Métricas principales
                         col1, col2, col3, col4 = st.columns(4)
