@@ -1,247 +1,247 @@
-# 🎵 Spotify Analytics - Frontend con Streamlit
+# 🎵 Spotify Analytics - Streamlit Frontend
 
-Aplicación web interactiva para análisis de géneros musicales y comparación de artistas usando la API de Spotify.
+Interactive web application for music genre analysis and artist comparison using the Spotify API.
 
-## 🚀 Características
+## 🚀 Features
 
-### 🎯 Análisis de Géneros
-- **Análisis Individual**: Analiza géneros específicos con métricas detalladas
-- **Comparación Múltiple**: Compara hasta varios géneros simultáneamente
-- **Tendencias**: Análisis de géneros mainstream vs underground
-- **Visualizaciones**: Gráficos radar, barras y tablas comparativas
+### 🎯 Genre Analysis
+- **Individual Analysis**: Analyze specific genres with detailed metrics
+- **Multiple Comparison**: Compare up to several genres simultaneously
+- **Trends**: Analysis of mainstream vs underground genres
+- **Visualizations**: Radar charts, bar graphs, and comparative tables
 
-### 🥊 Comparación de Artistas
-- **Búsqueda y Análisis**: Busca artistas y obtén análisis completos
-- **Comparación Múltiple**: Compara hasta 5 artistas simultáneamente
-- **BreakBeat Battle**: Compara artistas icónicos del género BreakBeat
-- **Batalla 1v1**: Comparación directa entre dos artistas
+### 🥊 Artist Comparison
+- **Search and Analysis**: Search artists and get complete analysis
+- **Multiple Comparison**: Compare up to 5 artists simultaneously
+- **BreakBeat Battle**: Compare iconic BreakBeat genre artists
+- **1v1 Battle**: Direct comparison between two artists
 
 ### 💎 Underground Gems
-- Detector automático de géneros underground
-- Análisis de potencial de géneros nicho
-- Métricas especializadas para música alternativa
+- Automatic underground genre detector
+- Niche genre potential analysis
+- Specialized metrics for alternative music
 
-## 📋 Requisitos
+## 📋 Requirements
 
 - Python 3.8+
-- Backend FastAPI corriendo (ver instrucciones abajo)
-- Credenciales de Spotify API
+- FastAPI backend running (see instructions below)
+- Spotify API credentials
 
-## 🔧 Instalación
+## 🔧 Installation
 
-### 1. Clonar el repositorio (si aún no lo has hecho)
+### 1. Clone the repository (if you haven't already)
 
 ```bash
 cd spotify-analytics
 ```
 
-### 2. Instalar dependencias
+### 2. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Configurar variables de entorno
+### 3. Configure environment variables
 
-Crea un archivo `.env` en la raíz del proyecto (si no existe):
+Create a `.env` file in the project root (if it doesn't exist):
 
 ```env
-SPOTIFY_CLIENT_ID=tu_client_id
-SPOTIFY_CLIENT_SECRET=tu_client_secret
+SPOTIFY_CLIENT_ID=your_client_id
+SPOTIFY_CLIENT_SECRET=your_client_secret
 API_BASE_URL=http://localhost:8000
 ```
 
-### 4. Iniciar el backend (FastAPI)
+### 4. Start the backend (FastAPI)
 
-En una terminal separada:
+In a separate terminal:
 
 ```bash
 cd backend
 uvicorn app.main:app --reload
 ```
 
-El backend estará disponible en `http://localhost:8000`
+The backend will be available at `http://localhost:8000`
 
-### 5. Iniciar el frontend (Streamlit)
+### 5. Start the frontend (Streamlit)
 
-En otra terminal:
+In another terminal:
 
 ```bash
 streamlit run app.py
 ```
 
-La aplicación se abrirá automáticamente en tu navegador en `http://localhost:8501`
+The application will automatically open in your browser at `http://localhost:8501`
 
-## 📱 Uso de la Aplicación
+## 📱 Using the Application
 
-### Navegación Principal
+### Main Navigation
 
-La aplicación tiene 5 secciones principales accesibles desde el sidebar:
+The application has 5 main sections accessible from the sidebar:
 
-1. **🏠 Inicio**: Información general y estadísticas rápidas
-2. **🎯 Análisis de Géneros**: Análisis individual, comparaciones y tendencias
-3. **🥊 Comparación de Artistas**: Búsqueda, análisis y comparaciones
-4. **💎 Underground Gems**: Descubre géneros underground
-5. **⚔️ Batalla 1v1**: Comparación directa entre artistas
+1. **🏠 Home**: General information and quick statistics
+2. **🎯 Genre Analysis**: Individual analysis, comparisons, and trends
+3. **🥊 Artist Comparison**: Search, analysis, and comparisons
+4. **💎 Underground Gems**: Discover underground genres
+5. **⚔️ 1v1 Battle**: Direct comparison between artists
 
-### Análisis de Géneros
+### Genre Analysis
 
-#### Análisis Individual
-1. Ingresa el nombre de un género (ej: "breakbeat", "electronic", "pop")
-2. Haz clic en "Analizar Género"
-3. Visualiza métricas como popularidad, energía, bailabilidad
-4. Explora el gráfico radar con características del género
+#### Individual Analysis
+1. Enter the name of a genre (e.g., "breakbeat", "electronic", "pop")
+2. Click "Analyze Genre"
+3. View metrics such as popularity, energy, danceability
+4. Explore the radar chart with genre characteristics
 
-#### Comparación Múltiple
-1. Ingresa varios géneros separados por coma
-2. Compara métricas entre todos los géneros
-3. Visualiza rankings de popularidad, energía y bailabilidad
-4. Detecta automáticamente géneros underground
+#### Multiple Comparison
+1. Enter several genres separated by comma
+2. Compare metrics among all genres
+3. Visualize rankings of popularity, energy, and danceability
+4. Automatically detect underground genres
 
-#### Análisis de Tendencias
-1. Haz clic en "Analizar Tendencias"
-2. Compara géneros mainstream vs underground
-3. Visualiza diferencias en popularidad y energía
+#### Trend Analysis
+1. Click "Analyze Trends"
+2. Compare mainstream vs underground genres
+3. Visualize differences in popularity and energy
 
-### Comparación de Artistas
+### Artist Comparison
 
-#### Búsqueda y Análisis
-1. Ingresa el nombre de un artista
-2. "Buscar": Información básica
-3. "Análisis Completo": Métricas detalladas, top tracks, géneros
+#### Search and Analysis
+1. Enter an artist's name
+2. "Search": Basic information
+3. "Complete Analysis": Detailed metrics, top tracks, genres
 
-#### Comparación Múltiple
-1. Ingresa hasta 5 artistas separados por coma
-2. Compara popularidad, seguidores y métricas de audio
-3. Visualiza ganadores por categoría
-4. Lee insights generados automáticamente
+#### Multiple Comparison
+1. Enter up to 5 artists separated by comma
+2. Compare popularity, followers, and audio metrics
+3. Visualize winners by category
+4. Read automatically generated insights
 
 #### BreakBeat Battle
-1. Haz clic en "Iniciar Battle"
-2. Compara The Prodigy, Pendulum y The Chemical Brothers
-3. Visualiza gráfico radar comparativo
-4. Descubre los ganadores en cada categoría
+1. Click "Start Battle"
+2. Compare The Prodigy, Pendulum, and The Chemical Brothers
+3. Visualize comparative radar chart
+4. Discover winners in each category
 
-### Batalla 1v1
-1. Ingresa dos artistas en los campos correspondientes
-2. Haz clic en "Iniciar Batalla"
-3. Comparación lado a lado con métricas clave
-4. Visualiza ganadores por categoría
+### 1v1 Battle
+1. Enter two artists in the corresponding fields
+2. Click "Start Battle"
+3. Side-by-side comparison with key metrics
+4. Visualize winners by category
 
 ### Underground Gems
-1. Haz clic en "Buscar Underground Gems"
-2. Descubre géneros underground automáticamente
-3. Visualiza métricas de cada género encontrado
-4. Lee las razones por las que se consideran underground
+1. Click "Search Underground Gems"
+2. Discover underground genres automatically
+3. Visualize metrics for each found genre
+4. Read the reasons why they're considered underground
 
-## 🎨 Características de la Interfaz
+## 🎨 Interface Features
 
-- **Diseño responsivo**: Se adapta a diferentes tamaños de pantalla
-- **Tema Spotify**: Colores inspirados en la marca Spotify (#1DB954)
-- **Gráficos interactivos**: Usando Plotly para visualizaciones dinámicas
-- **Tabs organizados**: Navegación intuitiva por pestañas
-- **Métricas destacadas**: Cards con información clave
-- **Spinner de carga**: Feedback visual durante peticiones a la API
+- **Responsive design**: Adapts to different screen sizes
+- **Spotify theme**: Colors inspired by Spotify brand (#1DB954)
+- **Interactive charts**: Using Plotly for dynamic visualizations
+- **Organized tabs**: Intuitive tab navigation
+- **Featured metrics**: Cards with key information
+- **Loading spinner**: Visual feedback during API requests
 
-## 🛠️ Configuración Avanzada
+## 🛠️ Advanced Configuration
 
-### Cambiar URL de la API
+### Change API URL
 
-Puedes cambiar la URL del backend desde el sidebar de la aplicación en "Configuración".
+You can change the backend URL from the sidebar in "Configuration".
 
-### Verificar Estado de la API
+### Verify API Status
 
-Usa el botón "🔍 Verificar API" en el sidebar para comprobar:
-- Estado de conexión con la base de datos
-- Estado de conexión con Spotify API
-- Features disponibles
+Use the "🔍 Verify API" button in the sidebar to check:
+- Database connection status
+- Spotify API connection status
+- Available features
 
 ## 🐛 Troubleshooting
 
-### El frontend no se conecta al backend
-- Verifica que el backend esté corriendo en `http://localhost:8000`
-- Revisa la URL configurada en el sidebar
-- Comprueba que no haya errores en la consola del backend
+### Frontend doesn't connect to backend
+- Verify that the backend is running at `http://localhost:8000`
+- Check the URL configured in the sidebar
+- Check that there are no errors in the backend console
 
-### No se encuentran artistas o géneros
-- Verifica que las credenciales de Spotify API estén configuradas
-- Revisa el estado de la API con el botón "Verificar API"
-- Comprueba que la base de datos esté conectada
+### Can't find artists or genres
+- Verify that Spotify API credentials are configured
+- Check API status with the "Verify API" button
+- Check that the database is connected
 
-### Errores de visualización
-- Asegúrate de tener instaladas todas las dependencias (`pip install -r requirements.txt`)
-- Limpia la caché de Streamlit: `Ctrl + R` o `Cmd + R`
+### Visualization errors
+- Make sure all dependencies are installed (`pip install -r requirements.txt`)
+- Clear Streamlit cache: `Ctrl + R` or `Cmd + R`
 
-## 📊 Métricas Disponibles
+## 📊 Available Metrics
 
-### Géneros
-- **Popularidad**: Nivel de popularidad promedio (0-100)
-- **Energía**: Intensidad y actividad percibida (0-1)
-- **Bailabilidad**: Qué tan adecuado es para bailar (0-1)
-- **Valencia**: Positividad musical (0-1)
-- **Acústica**: Presencia de instrumentos acústicos (0-1)
-- **Instrumental**: Cantidad de contenido instrumental (0-1)
+### Genres
+- **Popularity**: Average popularity level (0-100)
+- **Energy**: Perceived intensity and activity (0-1)
+- **Danceability**: How suitable for dancing (0-1)
+- **Valence**: Musical positivity (0-1)
+- **Acousticness**: Presence of acoustic instruments (0-1)
+- **Instrumentalness**: Amount of instrumental content (0-1)
 
-### Artistas
-- **Popularidad**: Popularidad del artista (0-100)
-- **Seguidores**: Número total de seguidores
-- **Top Tracks**: Mejores canciones del artista
-- **Géneros**: Géneros asociados al artista
-- **Características de Audio**: Métricas promedio de sus canciones
+### Artists
+- **Popularity**: Artist popularity (0-100)
+- **Followers**: Total number of followers
+- **Top Tracks**: Artist's best songs
+- **Genres**: Genres associated with the artist
+- **Audio Features**: Average metrics from their songs
 
-## 🔗 Endpoints de la API Utilizados
+## 🔗 API Endpoints Used
 
-- `GET /`: Información de la API
-- `GET /health`: Estado del sistema
-- `GET /api/genres/analyze/{genre}`: Análisis de género
-- `GET /api/genres/analyze/multiple`: Comparación de géneros
-- `GET /api/genres/underground`: Géneros underground
-- `GET /api/genres/compare`: Comparar dos géneros
-- `GET /api/genres/trending`: Análisis de tendencias
-- `GET /api/artists/search`: Buscar artista
-- `GET /api/artists/analyze/{artist_name}`: Análisis de artista
-- `GET /api/artists/compare`: Comparar artistas
-- `GET /api/artists/vs`: Batalla 1v1
+- `GET /`: API information
+- `GET /health`: System status
+- `GET /api/genres/analyze/{genre}`: Genre analysis
+- `GET /api/genres/analyze/multiple`: Genre comparison
+- `GET /api/genres/underground`: Underground genres
+- `GET /api/genres/compare`: Compare two genres
+- `GET /api/genres/trending`: Trend analysis
+- `GET /api/artists/search`: Search artist
+- `GET /api/artists/analyze/{artist_name}`: Artist analysis
+- `GET /api/artists/compare`: Compare artists
+- `GET /api/artists/vs`: 1v1 battle
 - `GET /api/artists/compare/breakbeat`: BreakBeat battle
 
 ## 🚀 Deployment
 
-### Usando Docker Compose
+### Using Docker Compose
 
-Si usas Docker Compose (incluye backend y frontend):
+If using Docker Compose (includes backend and frontend):
 
 ```bash
 docker-compose up
 ```
 
-### Deploy en Streamlit Cloud
+### Deploy on Streamlit Cloud
 
-1. Sube tu código a GitHub
-2. Ve a [share.streamlit.io](https://share.streamlit.io)
-3. Conecta tu repositorio
-4. Configura las variables de entorno
+1. Upload your code to GitHub
+2. Go to [share.streamlit.io](https://share.streamlit.io)
+3. Connect your repository
+4. Configure environment variables
 5. Deploy
 
-## 📝 Notas
+## 📝 Notes
 
-- El backend debe estar corriendo antes de usar el frontend
-- Las credenciales de Spotify API son necesarias para el funcionamiento completo
-- La base de datos PostgreSQL debe estar configurada y accesible
-- Para mejores resultados, usa nombres de artistas y géneros en inglés
+- The backend must be running before using the frontend
+- Spotify API credentials are necessary for full functionality
+- PostgreSQL database must be configured and accessible
+- For best results, use artist and genre names in English
 
-## 👨‍💻 Desarrollado con
+## 👨‍💻 Built With
 
-- **Streamlit**: Framework de frontend
-- **Plotly**: Visualizaciones interactivas
-- **Pandas**: Manipulación de datos
-- **Requests**: Comunicación con la API
+- **Streamlit**: Frontend framework
+- **Plotly**: Interactive visualizations
+- **Pandas**: Data manipulation
+- **Requests**: API communication
 - **FastAPI**: Backend API
-- **Spotipy**: Cliente de Spotify API
+- **Spotipy**: Spotify API client
 
-## 📄 Licencia
+## 📄 License
 
-Este proyecto es de código abierto y está disponible bajo la licencia MIT.
+This project is open source and available under the MIT License.
 
-## 🎵 ¡Disfruta explorando la música!
+## 🎵 Enjoy exploring music!
 
-Si tienes preguntas o sugerencias, no dudes en abrir un issue en el repositorio.
+If you have questions or suggestions, feel free to open an issue in the repository.
