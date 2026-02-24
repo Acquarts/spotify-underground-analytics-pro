@@ -55,19 +55,19 @@ def api_request(endpoint: str, params: Dict = None) -> Dict:
     """Realiza peticiones a la API"""
     try:
         url = f"{API_BASE_URL}{endpoint}"
-        st.write(f"🔗 Requesting: {url}")  # Debug
+        st.write(f"🔍 Requesting: {url}")  # Debug
 
         # Timeout más largo para endpoints complejos (60 segundos)
         timeout = 60 if '/trending' in endpoint or '/underground' in endpoint else 30
 
         response = requests.get(url, params=params, timeout=timeout)
-        st.write(f"📊 Status Code: {response.status_code}")  # Debug
+        st.write(f"✅ Status Code: {response.status_code}")  # Debug
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
         st.error(f"❌ Error conectando con la API: {str(e)}")
-        st.error(f"🔗 URL intentada: {url}")
-        st.error(f"📋 Tipo de error: {type(e).__name__}")
+        st.error(f"🔍 URL intentada: {url}")
+        st.error(f"⚠️ Tipo de error: {type(e).__name__}")
         return None
 
 # Header principal
@@ -93,17 +93,17 @@ with st.expander("🔧 Debug Info"):
     - Comparación de artistas
     - Detección de underground gems
 
-    ⚠️ **Audio Features (Energía, Bailabilidad, etc.):**
+    🎵 **Audio Features (Energía, Bailabilidad, etc.):**
     - Son **estimaciones inteligentes** basadas en perfiles de género
     - NO son datos reales de Spotify API
     - Son precisas pero aproximadas
 
-    💡 **¿Por qué?**
+    ⚠️ **¿Por qué?**
     Spotify cambió su política en Mayo 2025 y ahora solo permite Extended Quota
     a empresas con +250k usuarios activos. Los proyectos individuales deben
     usar Development Mode con estimaciones.
 
-    📊 **Precisión de estimaciones:**
+    🎯 **Precisión de estimaciones:**
     Las estimaciones se basan en características típicas de cada género musical
     y son ajustadas según popularidad. Son útiles para análisis comparativos.
     """)
@@ -112,11 +112,11 @@ with st.expander("🔧 Debug Info"):
 st.sidebar.title("Navegación")
 page = st.sidebar.radio(
     "Selecciona una sección:",
-    ["🏠 Inicio", "🎯 Análisis de Géneros", "🥊 Comparación de Artistas", "💎 Underground Gems", "⚔️ Batalla 1v1"]
+    ["🏠 Inicio", "🎵 Análisis de Géneros", "🎤 Comparación de Artistas", "🎸 Underground Gems", "⚔️ Batalla 1v1"]
 )
 
 st.sidebar.markdown("---")
-st.sidebar.markdown("### ⚙️ Configuración")
+st.sidebar.markdown("### 🎵 Configuración")
 api_url_input = st.sidebar.text_input("URL de la API", value=API_BASE_URL)
 if api_url_input != API_BASE_URL:
     API_BASE_URL = api_url_input
@@ -131,16 +131,16 @@ with st.sidebar:
         else:
             st.error("❌ API no disponible")
 
-# ============================================================================
+# ===================================================================
 # PÁGINA DE INICIO
-# ============================================================================
+# ===================================================================
 if page == "🏠 Inicio":
     st.title("Bienvenido a Spotify Analytics")
 
     col1, col2 = st.columns(2)
 
     with col1:
-        st.markdown("### 🎯 Análisis de Géneros")
+        st.markdown("### 🎵 Análisis de Géneros")
         st.write("""
         - Analiza géneros musicales específicos
         - Obtén métricas de audio (energía, bailabilidad, etc.)
@@ -149,7 +149,7 @@ if page == "🏠 Inicio":
         """)
 
     with col2:
-        st.markdown("### 🥊 Comparación de Artistas")
+        st.markdown("### 🎤 Comparación de Artistas")
         st.write("""
         - Busca artistas por nombre
         - Análisis completo de artistas
@@ -158,12 +158,12 @@ if page == "🏠 Inicio":
         """)
 
     st.markdown("---")
-    st.markdown("### 📊 Estadísticas Rápidas")
+    st.markdown("### 🎯 Estadísticas Rápidas")
 
     # Obtener información de la API
     root_info = api_request("/")
     if root_info:
-        st.success(f"✅ API Version: {root_info.get('version', 'N/A')}")
+        st.success(f"✅ API Versión: {root_info.get('version', 'N/A')}")
 
         col1, col2, col3 = st.columns(3)
         with col1:
@@ -171,13 +171,13 @@ if page == "🏠 Inicio":
         with col2:
             st.info("🎤 Comparación de Artistas Disponible")
         with col3:
-            st.info("💎 Detección Underground Disponible")
+            st.info("🎸 Detección Underground Disponible")
 
-# ============================================================================
+# ===================================================================
 # PÁGINA DE ANÁLISIS DE GÉNEROS
-# ============================================================================
-elif page == "🎯 Análisis de Géneros":
-    st.title("🎯 Análisis de Géneros Musicales")
+# ===================================================================
+elif page == "🎵 Análisis de Géneros":
+    st.title("🎵 Análisis de Géneros Musicales")
 
     tab1, tab2, tab3 = st.tabs(["Análisis Individual", "Comparación Múltiple", "Tendencias"])
 
@@ -201,7 +201,7 @@ elif page == "🎯 Análisis de Géneros":
 
                         # Advertencia si son features estimadas
                         if data.get("estimated"):
-                            st.warning("⚠️ **Audio Features Estimadas**: Los valores de energía, bailabilidad y otras métricas son estimaciones basadas en características típicas del género. La popularidad y tracks son datos reales de Spotify.")
+                            st.warning("🎵 **Audio Features Estimadas**: Los valores de energía, bailabilidad y otras métricas son estimaciones basadas en características típicas del género. La popularidad y tracks son datos reales de Spotify.")
 
                         # Métricas principales
                         col1, col2, col3, col4 = st.columns(4)
@@ -217,7 +217,7 @@ elif page == "🎯 Análisis de Géneros":
 
                         # Gráfico radar de características
                         if all(k in data for k in ['avg_energy', 'avg_danceability', 'avg_valence', 'avg_acousticness']):
-                            st.markdown("### 📊 Características del Género")
+                            st.markdown("### 🎯 Características del Género")
 
                             fig = go.Figure()
 
@@ -246,9 +246,9 @@ elif page == "🎯 Análisis de Géneros":
                             st.plotly_chart(fig, use_container_width=True)
 
                         # Información adicional
-                        with st.expander("📋 Ver datos completos"):
+                        with st.expander("🔍 Ver datos completos"):
                             # Métricas principales
-                            st.markdown("#### 📊 Métricas del Género")
+                            st.markdown("#### 🎯 Métricas del Género")
 
                             metrics_df = pd.DataFrame([
                                 {"Métrica": "Género", "Valor": data.get('genre', 'N/A').title()},
@@ -266,7 +266,7 @@ elif page == "🎯 Análisis de Géneros":
 
                             # Estado del modo
                             if data.get('development_mode'):
-                                st.markdown("#### ⚙️ Estado del Análisis")
+                                st.markdown("#### 🎵 Estado del Análisis")
                                 status_df = pd.DataFrame([
                                     {"Campo": "Modo", "Estado": "Development Mode"},
                                     {"Campo": "Audio Features", "Estado": "Estimadas" if data.get('estimated') else "No disponibles"}
@@ -350,8 +350,8 @@ elif page == "🎯 Análisis de Géneros":
                                 )
                                 st.plotly_chart(fig2, use_container_width=True)
 
-                            # Tabla de comparación
-                            st.markdown("### 📊 Tabla Comparativa")
+                            # Tabla comparativa
+                            st.markdown("### 🎯 Tabla Comparativa")
                             st.dataframe(df.set_index("Género"), use_container_width=True)
 
                             # Rankings
@@ -362,7 +362,7 @@ elif page == "🎯 Análisis de Géneros":
                                 col1, col2, col3 = st.columns(3)
 
                                 with col1:
-                                    st.markdown("**🔥 Más Popular**")
+                                    st.markdown("**🏅 Más Popular**")
                                     for i, genre in enumerate(rankings.get("by_popularity", [])[:3], 1):
                                         st.write(f"{i}. {genre.title()}")
 
@@ -372,7 +372,7 @@ elif page == "🎯 Análisis de Géneros":
                                         st.write(f"{i}. {genre.title()}")
 
                                 with col3:
-                                    st.markdown("**💃 Más Bailable**")
+                                    st.markdown("**🎶 Más Bailable**")
                                     for i, genre in enumerate(rankings.get("by_danceability", [])[:3], 1):
                                         st.write(f"{i}. {genre.title()}")
 
@@ -380,15 +380,15 @@ elif page == "🎯 Análisis de Géneros":
                             if "comparison" in data and "underground_gems" in data["comparison"]:
                                 underground = data["comparison"]["underground_gems"]
                                 if underground:
-                                    st.markdown("### 💎 Underground Gems Encontrados")
+                                    st.markdown("### 🎸 Underground Gems Encontrados")
                                     for gem in underground:
-                                        st.success(f"✨ **{gem.title()}** - Género underground detectado")
+                                        st.success(f"🎸 **{gem.title()}** - Género underground detectado")
             else:
                 st.warning("Por favor ingresa al menos un género")
 
     # TAB 3: Análisis de Tendencias
     with tab3:
-        st.subheader("📈 Análisis de Tendencias: Mainstream vs Underground")
+        st.subheader("📊 Análisis de Tendencias: Mainstream vs Underground")
 
         if st.button("🔍 Analizar Tendencias", key="analyze_trends"):
             with st.spinner("Analizando tendencias..."):
@@ -402,14 +402,14 @@ elif page == "🎯 Análisis de Géneros":
                     col1, col2 = st.columns(2)
 
                     with col1:
-                        st.markdown("### 🎤 Mainstream")
+                        st.markdown("### 🎵 Mainstream")
                         st.metric(
                             "Popularidad Promedio",
                             f"{insights.get('mainstream_avg_popularity', 0):.1f}"
                         )
 
                     with col2:
-                        st.markdown("### 💎 Underground")
+                        st.markdown("### 🎸 Underground")
                         st.metric(
                             "Popularidad Promedio",
                             f"{insights.get('underground_avg_popularity', 0):.1f}"
@@ -418,7 +418,7 @@ elif page == "🎯 Análisis de Géneros":
                     # Comparación de energía
                     if "energy_comparison" in insights:
                         energy_comp = insights["energy_comparison"]
-                        st.markdown("### ⚡ Comparación de Energía")
+                        st.markdown("### 🎯 Comparación de Energía")
 
                         col1, col2, col3 = st.columns(3)
 
@@ -431,8 +431,8 @@ elif page == "🎯 Análisis de Géneros":
                             st.metric("Ganador", winner.title())
 
                     # Datos completos
-                    with st.expander("📋 Ver análisis completo"):
-                        st.markdown("#### 🎤 Géneros Mainstream Analizados")
+                    with st.expander("🔍 Ver análisis completo"):
+                        st.markdown("#### 🎵 Géneros Mainstream Analizados")
                         mainstream_analysis = data.get("mainstream_analysis", {})
                         mainstream_genres = mainstream_analysis.get("genres", {})
 
@@ -451,7 +451,7 @@ elif page == "🎯 Análisis de Géneros":
                             if mainstream_list:
                                 st.dataframe(pd.DataFrame(mainstream_list), hide_index=True, use_container_width=True)
 
-                        st.markdown("#### 💎 Géneros Underground Analizados")
+                        st.markdown("#### 🎸 Géneros Underground Analizados")
                         underground_analysis = data.get("underground_analysis", {})
                         underground_genres = underground_analysis.get("genres", {})
 
@@ -470,11 +470,11 @@ elif page == "🎯 Análisis de Géneros":
                             if underground_list:
                                 st.dataframe(pd.DataFrame(underground_list), hide_index=True, use_container_width=True)
 
-# ============================================================================
+# ===================================================================
 # PÁGINA DE COMPARACIÓN DE ARTISTAS
-# ============================================================================
-elif page == "🥊 Comparación de Artistas":
-    st.title("🥊 Comparación de Artistas")
+# ===================================================================
+elif page == "🎤 Comparación de Artistas":
+    st.title("🎤 Comparación de Artistas")
 
     tab1, tab2, tab3 = st.tabs(["Búsqueda y Análisis", "Comparación Múltiple", "BreakBeat Battle"])
 
@@ -494,7 +494,7 @@ elif page == "🥊 Comparación de Artistas":
             search_btn = st.button("🔍 Buscar", key="btn_search")
 
         with col2:
-            analyze_btn = st.button("📊 Análisis Completo", key="btn_analyze")
+            analyze_btn = st.button("🎯 Análisis Completo", key="btn_analyze")
 
         if search_btn and artist_name:
             with st.spinner(f"Buscando {artist_name}..."):
@@ -561,7 +561,7 @@ elif page == "🥊 Comparación de Artistas":
 
                     # Métricas de audio promedio
                     if "avg_audio_features" in data:
-                        st.markdown("### 📊 Características de Audio Promedio")
+                        st.markdown("### 🎯 Características de Audio Promedio")
                         features = data["avg_audio_features"]
 
                         col1, col2, col3, col4 = st.columns(4)
@@ -577,7 +577,7 @@ elif page == "🥊 Comparación de Artistas":
 
     # TAB 2: Comparación Múltiple
     with tab2:
-        st.subheader("🥊 Compara Múltiples Artistas")
+        st.subheader("🎤 Compara Múltiples Artistas")
 
         artists_input = st.text_input(
             "Artistas a comparar (separados por coma, máx 5)",
@@ -598,12 +598,13 @@ elif page == "🥊 Comparación de Artistas":
                         # Crear DataFrame para comparación
                         comparison_list = []
                         for artist_name, artist_info in detailed_data.items():
-                            comparison_list.append({
-                                "Artista": artist_name,
-                                "Popularidad": artist_info.get("popularity", 0),
-                                "Seguidores": artist_info.get("followers", 0),
-                                "Top Tracks": len(artist_info.get("top_tracks", []))
-                            })
+                            if "error" not in artist_info:
+                                comparison_list.append({
+                                    "Artista": artist_name,
+                                    "Popularidad": artist_info.get("popularity", 0),
+                                    "Seguidores": artist_info.get("followers", 0),
+                                    "Top Tracks": len(artist_info.get("top_tracks", []))
+                                })
 
                         if comparison_list:
                             df = pd.DataFrame(comparison_list)
@@ -634,26 +635,26 @@ elif page == "🥊 Comparación de Artistas":
                                 st.plotly_chart(fig2, use_container_width=True)
 
                             # Tabla comparativa
-                            st.markdown("### 📊 Tabla Comparativa")
+                            st.markdown("### 🎯 Tabla Comparativa")
                             st.dataframe(df.set_index("Artista"), use_container_width=True)
 
                             # Ganadores
                             if "winners" in comparison:
-                                st.markdown("### 🏆 Ganadores")
+                                st.markdown("### 🏆 Ganadores por Categoría")
                                 winners = comparison["winners"]
 
                                 col1, col2, col3 = st.columns(3)
 
                                 with col1:
-                                    st.success(f"**Popularidad:** {winners.get('popularity', 'N/A')}")
+                                    st.success(f"**Popularidad**\n\n{winners.get('popularity', 'N/A')}")
                                 with col2:
-                                    st.success(f"**Seguidores:** {winners.get('followers', 'N/A')}")
+                                    st.success(f"**Seguidores**\n\n{winners.get('followers', 'N/A')}")
                                 with col3:
-                                    st.success(f"**Energía:** {winners.get('energy', 'N/A')}")
+                                    st.success(f"**Energía**\n\n{winners.get('energy', 'N/A')}")
 
                             # Insights
                             if "insights" in comparison:
-                                st.markdown("### 💡 Insights")
+                                st.markdown("### 🎯 Insights")
                                 for insight in comparison["insights"]:
                                     st.info(insight)
             else:
@@ -661,10 +662,10 @@ elif page == "🥊 Comparación de Artistas":
 
     # TAB 3: BreakBeat Battle
     with tab3:
-        st.subheader("🎵 BreakBeat Battle")
+        st.subheader("⚔️ BreakBeat Battle")
         st.write("Compara los artistas más icónicos del BreakBeat")
 
-        if st.button("⚡ Iniciar Battle", key="btn_breakbeat"):
+        if st.button("⚔️ Iniciar Battle", key="btn_breakbeat"):
             with st.spinner("Preparando la batalla..."):
                 result = api_request("/api/artists/compare/breakbeat")
 
@@ -689,7 +690,7 @@ elif page == "🥊 Comparación de Artistas":
                         df = pd.DataFrame(comparison_list)
 
                         # Gráfico de radar comparativo
-                        st.markdown("### 📊 Comparación Visual")
+                        st.markdown("### 🎯 Comparación Visual")
 
                         fig = go.Figure()
 
@@ -718,7 +719,7 @@ elif page == "🥊 Comparación de Artistas":
                         st.plotly_chart(fig, use_container_width=True)
 
                         # Tabla comparativa
-                        st.markdown("### 📊 Estadísticas")
+                        st.markdown("### 🎯 Estadísticas")
                         st.dataframe(df.set_index("Artista"), use_container_width=True)
 
                         # Ganadores
@@ -729,17 +730,17 @@ elif page == "🥊 Comparación de Artistas":
                             col1, col2, col3 = st.columns(3)
 
                             with col1:
-                                st.success(f"**🔥 Popularidad**\n\n{winners.get('popularity', 'N/A')}")
+                                st.success(f"**Popularidad**\n\n{winners.get('popularity', 'N/A')}")
                             with col2:
-                                st.success(f"**👥 Seguidores**\n\n{winners.get('followers', 'N/A')}")
+                                st.success(f"**Seguidores**\n\n{winners.get('followers', 'N/A')}")
                             with col3:
-                                st.success(f"**⚡ Energía**\n\n{winners.get('energy', 'N/A')}")
+                                st.success(f"**Energía**\n\n{winners.get('energy', 'N/A')}")
 
-# ============================================================================
+# ===================================================================
 # PÁGINA DE UNDERGROUND GEMS
-# ============================================================================
-elif page == "💎 Underground Gems":
-    st.title("💎 Underground Gems Finder")
+# ===================================================================
+elif page == "🎸 Underground Gems":
+    st.title("🎸 Underground Gems Finder")
     st.write("Descubre géneros underground con alto potencial")
 
     if st.button("🔍 Buscar Underground Gems", key="find_gems"):
@@ -754,7 +755,7 @@ elif page == "💎 Underground Gems":
 
                 if underground_genres:
                     for genre in underground_genres:
-                        with st.expander(f"💎 {genre.get('name', 'N/A').title()}", expanded=True):
+                        with st.expander(f"🎸 {genre.get('name', 'N/A').title()}", expanded=True):
                             col1, col2, col3 = st.columns(3)
 
                             with col1:
@@ -764,21 +765,22 @@ elif page == "💎 Underground Gems":
                             with col3:
                                 st.metric("Bailabilidad", f"{genre.get('avg_danceability', 0):.2f}")
 
-                            st.write(f"**Reason:** {genre.get('reason', 'N/A')}")
+                            st.write(f"**Razón:** {genre.get('reason', 'N/A')}")
+
+                    # Métricas generales
+                    col1, col2 = st.columns(2)
+
+                    with col1:
+                        st.metric("Total Analizados", data.get("total_analyzed", 0))
+                    with col2:
+                        st.metric("Gems Encontrados", data.get("gems_found", 0))
+
                 else:
                     st.info("No se encontraron géneros underground en esta búsqueda")
 
-                # Métricas generales
-                col1, col2 = st.columns(2)
-
-                with col1:
-                    st.metric("Total Analizados", data.get("total_analyzed", 0))
-                with col2:
-                    st.metric("Gems Encontrados", data.get("gems_found", 0))
-
-# ============================================================================
+# ===================================================================
 # PÁGINA DE BATALLA 1v1
-# ============================================================================
+# ===================================================================
 elif page == "⚔️ Batalla 1v1":
     st.title("⚔️ Batalla 1 vs 1")
     st.write("Comparación directa entre dos artistas")
@@ -807,7 +809,7 @@ elif page == "⚔️ Batalla 1v1":
                 if result and result.get("status") == "success":
                     data = result.get("data", {})
 
-                    st.markdown(f"## {data.get('matchup', 'N/A')}")
+                    st.markdown(f"### {data.get('matchup', 'N/A')}")
                     st.markdown("---")
 
                     # Comparación lado a lado
@@ -842,7 +844,6 @@ elif page == "⚔️ Batalla 1v1":
                         if genres:
                             st.write(f"**Géneros:** {', '.join(genres)}")
 
-                    # Ganadores
                     st.markdown("---")
                     st.markdown("### 🏆 Ganadores por Categoría")
 
@@ -851,15 +852,15 @@ elif page == "⚔️ Batalla 1v1":
                     col1, col2, col3 = st.columns(3)
 
                     with col1:
-                        st.success(f"**🔥 Popularidad**\n\n{winners.get('popularity', 'N/A')}")
+                        st.success(f"**Popularidad**\n\n{winners.get('popularity', 'N/A')}")
                     with col2:
-                        st.success(f"**👥 Seguidores**\n\n{winners.get('followers', 'N/A')}")
+                        st.success(f"**Seguidores**\n\n{winners.get('followers', 'N/A')}")
                     with col3:
-                        st.success(f"**⚡ Energía**\n\n{winners.get('energy', 'N/A')}")
+                        st.success(f"**Energía**\n\n{winners.get('energy', 'N/A')}")
 
                     # Insights
                     if "insights" in data:
-                        st.markdown("### 💡 Insights")
+                        st.markdown("### 🎯 Insights")
                         for insight in data["insights"]:
                             st.info(insight)
         else:
@@ -875,3 +876,5 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
+print("Hola Adri")
